@@ -1,0 +1,10 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import CTA from '../../components/CTA.astro';
+export async function getStaticPaths(){return (await getCollection('services')).map(service=>({params:{slug:service.id},props:{service}}));}
+const { service } = Astro.props;
+const { Content } = await render(service);
+---
+<Base title={service.data.title} description={service.data.description}><PageIntro {...service.data}/><section class="container content-grid"><article><ul class="part-list" aria-label="Example requirements">{service.data.parts.map(part=><li>{part}</li>)}</ul><div class="prose"><Content/></div><div class="actions"><a href="/services/" class="text-link">← All capabilities</a></div></article><aside class="sidebar"><p class="eyebrow">Your next step</p><h2>Send the specification.</h2><p>Part number, quantity, condition, and required documentation. We’ll take it from there.</p><div class="actions"><CTA href={`/quote/?category=${service.data.category}`}>Request a Quote</CTA></div><p>Fast quoting, documentation supplied.</p></aside></section></Base>

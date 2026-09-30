@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+---
+<Base title="Request a quote" description="Tell us what you need. A simple inquiry for aviation parts and industrial components. Fast quoting, documentation supplied.">
+  <PageIntro eyebrow="Your inquiry" title="Let’s find your next part." description="Tell us what you need and how to reach you. We’ll take it from there."/>
+  <section class="container quote-page-form" aria-label="Quote request"><QuoteForm/></section>
+</Base>

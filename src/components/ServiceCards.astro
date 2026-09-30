@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import Arrow from './Arrow.astro';
+interface Props { category: 'aviation' | 'industrial'; scroll?: boolean; }
+const { category, scroll = false } = Astro.props;
+const services = (await getCollection('services', ({data})=>data.category===category)).sort((a,b)=>a.data.order-b.data.order);
+---
+<div class:list={['service-grid', { 'service-scroll':scroll }]} aria-label={`${category} capabilities`}>
+{services.map((service,i) => <a class="service-card" href={`/services/${service.id}/`} data-reveal style={`--delay:${i*60}ms`}>
+  <div class="card-top"><span class="index">{String(service.data.order).padStart(2,'0')}</span><Arrow/></div>
+  <svg viewBox="0 0 280 110" width="280" height="110" aria-hidden="true" class={`capability-art art-${i}`}><g fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="140" cy="55" rx={55+i*15} ry="37"/><ellipse cx="140" cy="55" rx="28" ry={25-i*4}/><path d="M18 55H100M180 55H262M140 3V20M140 90V107" stroke-dasharray="4 5"/><path d={i===0?'M85 55L140 15L195 55L140 95Z':i===1?'M85 18H195V92H85ZM98 28H182V82H98Z':'M75 33L140 7L205 33V80L140 104L75 80ZM75 33L140 61L205 33M140 61V104'}/></g></svg>
+  <h3>{service.data.shortTitle}</h3><p>{service.data.description}</p><span class="card-link">Explore capability <span aria-hidden="true">↗</span></span>
+</a>)}
+</div>

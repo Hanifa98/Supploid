@@ -1,0 +1,52 @@
+---
+import '../styles/fonts.css';
+import '../styles/global.css';
+import { site, navigation, ogPath } from '../lib/site';
+import Logo from '../components/Logo.astro';
+import CTA from '../components/CTA.astro';
+interface Props { title: string; description: string; article?: Record<string, unknown>; noindex?: boolean; }
+const { title, description, article, noindex = false } = Astro.props;
+const path = Astro.url.pathname;
+const canonical = new URL(path, site.url).href;
+const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true' && !noindex;
+const crumbs = path.split('/').filter(Boolean).map((part, i, all) => ({ '@type':'ListItem', position:i+2, name:part.replaceAll('-', ' '), item:new URL('/'+all.slice(0,i+1).join('/')+'/',site.url).href }));
+const structured = [ { '@context':'https://schema.org', '@type':'Organization', '@id':site.url+'/#organization', name:site.name, url:site.url, email:site.email, logo:site.url+'/favicon.svg' }, ...(path === '/' ? [] : [{ '@context':'https://schema.org', '@type':'BreadcrumbList', itemListElement:[{ '@type':'ListItem', position:1, name:'Home', item:site.url+'/' },...crumbs] }]), ...(path === '/contact/' ? [{ '@context':'https://schema.org', '@type':'LocalBusiness', name:site.name, url:site.url, email:site.email }] : []), ...(article ? [article] : []) ];
+const analytics = import.meta.env.PUBLIC_ANALYTICS_TOKEN;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="referrer" content="no-referrer"/>
+  <title>{title} | Supploid</title><meta name="description" content={description}/>
+  <link rel="canonical" href={canonical}/><meta name="robots" content={indexable ? 'index,follow' : 'noindex,nofollow'}/>
+  <meta name="theme-color" content="#0a0c0f"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <script is:inline>
+    (()=>{const root=document.documentElement;let theme;try{theme=localStorage.getItem('supploid-theme')}catch{}if(theme!=='light'&&theme!=='dark')theme=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';root.dataset.theme=theme;root.classList.add('js');document.querySelector('meta[name="theme-color"]').content=theme==='light'?'#f7f8f3':'#0a0c0f'})();
+  </script>
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin/>
+  <meta property="og:type" content={article ? 'article' : 'website'}/><meta property="og:site_name" content="Supploid"/>
+  <meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/>
+  <meta property="og:image" content={new URL(ogPath(path), site.url).href}/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content={title}/><meta name="twitter:description" content={description}/><meta name="twitter:image" content={new URL(ogPath(path),site.url).href}/>
+  <script type="application/ld+json" set:html={JSON.stringify(structured).replaceAll('<','\\u003c')}/>
+  {analytics && <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token:analytics })}></script>}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="aog-bar" aria-label="Premium AOG contact"><div class="container aog-inner"><a href="/aog/" class="aog-label"><span class="signal" aria-hidden="true"></span><span>PREMIUM AOG <span class="desktop-only">SUPPORT</span> / 24/7</span></a><a href={`mailto:${site.aogEmail}`}>{site.aogEmail}<span aria-hidden="true"> ↗</span></a></div></aside>
+  <header class="site-header container">
+    <a href="/" aria-label="Supploid home"><Logo/></a>
+    <nav class="desktop-nav" aria-label="Main navigation">{navigation.map(([label, href]) => <a href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>{label}</a>)}</nav>
+    <button type="button" class="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle light/dark theme"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><g class="theme-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></g><path class="theme-moon" d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"/></svg></button>
+    <a class="header-quote" href="/quote/">Request a Quote <span aria-hidden="true">↗</span></a>
+    <details class="mobile-menu"><summary>Menu <span aria-hidden="true">+</span></summary><nav aria-label="Mobile navigation">{navigation.map(([label,href])=><a href={href}>{label}</a>)}<a href="/quote/">Request a Quote</a><a href="/aog/">Premium AOG</a></nav></details>
+  </header>
+  <main id="main"><slot/></main>
+  <footer class="site-footer">
+    <div class="container footer-top"><div><p class="eyebrow">The next part starts here.</p><a class="footer-email" href={`mailto:${site.email}`}>{site.email}<span aria-hidden="true"> ↗</span></a></div><CTA href="/quote/">Send your RFQ</CTA></div>
+    <div class="container footer-grid"><div><a href="/" aria-label="Supploid home"><Logo/></a><p>Aviation-led. Industry-wide.<br/>Worldwide sourcing.</p></div><div><p class="eyebrow">Explore</p><a href="/services/">Capabilities</a><a href="/quality/">Our sourcing approach</a><a href="/about/">About Supploid</a></div><div><p class="eyebrow">Keep moving</p><a href="/quote/">Standard quote request</a><a href="/aog/">Premium AOG · 24/7</a><a href="/insights/">Procurement insights</a></div><div><p class="eyebrow">Get in touch</p><a href={`mailto:${site.email}`}>{site.email}</a><a href={`mailto:${site.aogEmail}`}>{site.aogEmail}</a><a href="/contact/">Contact</a></div></div>
+    <div class="container footer-bottom"><span>© {new Date().getUTCFullYear()} Supploid</span><div><a href="/privacy/">Privacy</a><a href="/terms/">Terms of sale</a></div><span>SUPPLOID → WORLDWIDE</span></div>
+  </footer>
+  <script src="../scripts/site.ts"></script>
+</body>
+</html>

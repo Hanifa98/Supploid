@@ -1,0 +1,6 @@
+---
+import Arrow from './Arrow.astro';
+interface Props { href: string; secondary?: boolean; class?: string; }
+const { href, secondary = false, class: extra = '' } = Astro.props;
+---
+<a href={href} class:list={['button', secondary ? 'button-secondary' : 'button-primary', extra]} data-magnetic={!secondary}><slot/><Arrow/></a>

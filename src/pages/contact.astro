@@ -1,0 +1,6 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+import CTA from '../components/CTA.astro';
+---
+<Base title="Contact Supploid" description="Contact Supploid for standard aviation and industrial quotes or our separate premium AOG service, available 24/7."><PageIntro eyebrow="Let’s talk" title="A clear line to your next part." description="Tell us what you need, where it needs to go, and when. Choose standard sourcing or premium AOG support."/><section class="container contact-grid"><div class="contact-card"><p class="eyebrow">Standard sourcing</p><h2>Your everyday<br/>parts requirement.</h2><p>Aircraft parts, industrial components, or a full bill of materials. Fast quoting, documentation supplied.</p><a class="contact-email" href="mailto:info@supploid.com">info@supploid.com ↗</a><div class="actions"><CTA href="/quote/">Send an inquiry</CTA></div></div><div class="contact-card urgent"><p class="eyebrow" style="color:var(--urgent)">Premium AOG / 24/7</p><h2>Your urgent<br/>aircraft requirement.</h2><p>A separate premium service for grounded-aircraft support. Share your part number, aircraft type, and callback details.</p><a class="contact-email" href="mailto:aog@supploid.com">aog@supploid.com ↗</a><div class="actions"><CTA href="/aog/" secondary>Start premium AOG</CTA></div></div></section></Base>

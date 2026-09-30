@@ -1,0 +1,11 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CTA from '../../components/CTA.astro';
+import { site, ogPath } from '../../lib/site';
+export async function getStaticPaths(){return (await getCollection('insights',({data})=>!data.draft)).map(post=>({params:{slug:post.id},props:{post}}));}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const article = { '@context':'https://schema.org', '@type':'Article', headline:post.data.title, description:post.data.description, datePublished:post.data.publishDate.toISOString(), author:{'@type':'Organization',name:post.data.author,url:site.url}, publisher:{'@id':site.url+'/#organization'}, image:new URL(ogPath(Astro.url.pathname),site.url).href, mainEntityOfPage:new URL(Astro.url.pathname,site.url).href };
+---
+<Base title={post.data.title} description={post.data.description} article={article}><header class="container page-intro article-header"><a class="back-link" href="/insights/">← All insights</a><p class="eyebrow">{post.data.tags.join(' / ')}</p><h1>{post.data.title}</h1><p class="lead">{post.data.description}</p><div class="article-meta"><span>{post.data.author}</span><time datetime={post.data.publishDate.toISOString()}>{post.data.publishDate.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}</time></div></header><article class="container article-content"><figure class="article-cover" style="margin-inline:auto"><picture><source srcset={post.data.heroImage+'.avif'} type="image/avif"/><img src={post.data.heroImage+'.webp'} width="800" height="480" alt="Abstract technical illustration accompanying this procurement guide." loading="eager" fetchpriority="high"/></picture></figure><div class="prose"><Content/></div></article><aside class="container article-cta notice"><h2 style="font-size:30px">Put the details in your RFQ.</h2><p style="margin-top:16px">Tell us the part, condition, and source documentation you need.</p><div class="actions"><CTA href="/quote/">Request a Quote</CTA></div></aside></Base>

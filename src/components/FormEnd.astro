@@ -1,0 +1,13 @@
+---
+interface Props { kind: 'quote'|'aog'; }
+const { kind } = Astro.props;
+const live=import.meta.env.PUBLIC_FORMS_ENABLED==='true' && !!import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const siteKey=import.meta.env.PUBLIC_TURNSTILE_SITE_KEY||'';
+---
+<div class="honeypot" aria-hidden="true"><label for="business-extension">Business extension</label><input id="business-extension" name="business_extension" autocomplete="off" tabindex="-1"/></div>
+<div class="field"><label class="consent-label" for="consent"><input id="consent" type="checkbox" name="consent" required/><span>I have read the <a href="/privacy/">privacy notice</a> and agree to my details being used to handle this request. {live ? 'The retention period is described in the privacy notice.' : 'This prepares an email draft; nothing is sent until you send that email.'}</span></label><p class="field-error" id="consent-error" aria-live="polite"></p></div>
+{live && <div class="turnstile-slot" data-sitekey={siteKey} data-action={kind} aria-label="Security verification"></div>}
+<div class="form-actions"><button type="submit" class="button button-primary" data-submit>{live ? kind==='aog'?'Send premium AOG request':'Send RFQ' : 'Prepare email request'}<span aria-hidden="true">↗</span></button><p>{kind==='aog'?'Premium AOG is a separate service. Scope and terms are agreed for your request.':'Fast quoting, documentation supplied.'}</p></div>
+<div class="form-status" id="form-status" role="status" aria-live="polite" aria-atomic="true"></div>
+<p class="form-fallback">Prefer email? <a href={kind==='aog'?'mailto:aog@supploid.com':'mailto:info@supploid.com'}>{kind==='aog'?'aog@supploid.com':'info@supploid.com'}</a></p>
+<noscript><p class="notice">Email your part number and requirements directly. The interactive form needs JavaScript.</p></noscript>

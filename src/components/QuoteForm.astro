@@ -1,0 +1,21 @@
+---
+import Field from './Field.astro';
+import FormEnd from './FormEnd.astro';
+const live=import.meta.env.PUBLIC_FORMS_ENABLED==='true'&&!!import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+<form class="request-form inquiry-form" data-request-form="quote" data-live={String(live)} action="/api/quote" method="post">
+  <fieldset class="category-section"><legend>What are you sourcing? <span aria-hidden="true">*</span></legend><div class="segment-options"><label class="segment-option"><input type="radio" name="category" value="aviation" checked required/>Aviation / Aerospace</label><label class="segment-option"><input type="radio" name="category" value="industrial" required/>Industrial / General</label></div></fieldset>
+  <div class="inquiry-fields">
+    <div data-category="industrial" hidden><Field id="description" label="Description" required maxlength={500}/></div>
+    <div class="field"><label for="partNumber">Part number<span data-part-required aria-hidden="true"> *</span><span data-part-optional class="optional" hidden> · optional</span></label><input id="partNumber" name="partNumber" required maxlength="120" aria-describedby="partNumber-error"/><p class="field-error" id="partNumber-error" aria-live="polite"></p></div>
+    <Field id="quantity" label="Quantity" type="number" min="0.001" max="1000000" step="any" required/>
+    <Field id="firstName" label="First name" required autocomplete="given-name"/>
+    <Field id="lastName" label="Last name" required autocomplete="family-name"/>
+    <Field id="email" label="Email" type="email" required autocomplete="email" maxlength={254}/>
+    <Field id="phone" label="Phone number" type="tel" autocomplete="tel" maxlength={50}/>
+    <Field id="company" label="Company name" autocomplete="organization"/>
+    <Field id="message" label="Message" type="textarea" required maxlength={5000}/>
+  </div>
+  <FormEnd kind="quote"/>
+</form>
+<script src="../scripts/forms.ts"></script>

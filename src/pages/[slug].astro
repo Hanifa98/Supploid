@@ -1,0 +1,10 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/PageIntro.astro';
+import CTA from '../components/CTA.astro';
+export async function getStaticPaths(){return (await getCollection('pages',({id})=>id!=='home')).map(page=>({params:{slug:page.id},props:{page}}));}
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+<Base title={page.data.title} description={page.data.description} noindex={['privacy','terms'].includes(page.id)}><PageIntro {...page.data}/><section class="container content-grid"><article class="prose"><Content/></article><aside class="sidebar"><p class="eyebrow">Start with your requirement</p><h2>The next part.<br/>The right questions.</h2><p>Send your part number, quantity, condition, and the documents you need.</p><div class="actions"><CTA href="/quote/">Request a Quote</CTA></div><p>Fast quoting, documentation supplied. For a grounded aircraft, use <a class="accent" href="/aog/">premium AOG support</a>.</p></aside></section></Base>

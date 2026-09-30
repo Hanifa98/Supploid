@@ -1,0 +1,8 @@
+---
+import { getCollection } from 'astro:content';
+interface Props { limit?: number; heading?:'h2'|'h3'; eagerFirst?:boolean; }
+const { limit = 100, heading='h3', eagerFirst=false } = Astro.props;
+const Heading=heading;
+const posts = (await getCollection('insights',({data})=>!data.draft)).sort((a,b)=>b.data.publishDate.valueOf()-a.data.publishDate.valueOf()).slice(0,limit);
+---
+<div class="insight-grid">{posts.map((post,i)=><a class="insight-card" href={`/insights/${post.id}/`} data-reveal><div class="insight-image"><picture><source srcset={post.data.heroImage+'.avif'} type="image/avif"/><img src={post.data.heroImage+'.webp'} width="800" height="480" alt="" loading={eagerFirst&&i===0?'eager':'lazy'} fetchpriority={eagerFirst&&i===0?'high':undefined} decoding="async"/></picture><span class="image-label">SUPPLOID / FIELD NOTES</span></div><div class="insight-meta"><span>{post.data.tags[0]}</span><time datetime={post.data.publishDate.toISOString()}>{post.data.publishDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'})}</time></div><Heading>{post.data.title}</Heading><p>{post.data.description}</p><span class="card-link">Read the guide <span aria-hidden="true">↗</span></span></a>)}</div>
